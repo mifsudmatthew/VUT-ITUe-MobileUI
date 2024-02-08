@@ -1,4 +1,4 @@
-Author: Matthew Mifsud , xmifsum00
+Author: Matthew Mifsud
 
 Required Python Version: IMPORTANT Python 3.10.8 not newer.
 

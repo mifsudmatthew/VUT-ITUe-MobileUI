@@ -1,0 +1,174 @@
+# This is the view
+# Creating a float layout to fill with contents
+MDFloatLayout:
+
+    MDLabel: # Setting a title on the screen
+        id: task_label
+        halign: "center"
+        markup: True
+        text: "[b][size=100]Report System[/size][/b]"
+        font_name: "customFont.ttf"
+        pos_hint: {"y": 0.45}
+    
+    ScrollView: # Creating a scroll box, to contain list items
+        pos_hint: {"center_y": 0.5, "center_x": 0.5}
+        size_hint: 0.9, 0.8
+
+        MDList: # Creating a list nested inside a scroll box
+            id: container
+
+    MDFloatingActionButton: # Creating a button which opens the Submit Dialog
+        md_bg_color: 1, 0.647, 0, 1
+        icon: "alert"
+        disabled: app.isDisabled
+        on_release: app.showSubmitDialog()
+        pos_hint: {"x": 0.45, "y": 0.03}
+
+    MDFloatingActionButton: # Creating a button which opens the Details Dialog
+        md_bg_color: 0.8, 0.4, 0.3, 1
+        icon: "list-box-outline"
+        disabled: app.isDisabled
+        on_release: app.showReportDetailsDialog()
+        pos_hint: {"x": 0.25, "y": 0.03}
+
+    MDFloatingActionButton: # Creating a button which opens the Pending Reports Dialog
+        md_bg_color: 0.678, 0.847, 0.902, 1
+        icon: "equalizer"
+        on_release: app.showReportNumDialog()
+        pos_hint: {"x": 0.65, "y": 0.03}
+
+<SubmitDialog>: # Defining the Submit Dialog Box
+
+    # Properties of Dialog
+    orientation: "vertical"
+    spacing: "10dp"
+    size_hint: 1, None
+    height: "300dp"
+
+    GridLayout: # Creating a grid layout
+
+        # Properties
+        rows: 2
+
+        BoxLayout: # Nesting a box layout which will contains a text field and a 'time' button
+            orientation: "horizontal"
+
+            MDTextField:
+                id: details_text
+                hint_text:"Enter report details here..."
+                pos_hint: {"center_y": 0.4}
+                max_text_length: 100
+
+            MDIconButton: # Making a button which displays time picker
+                icon: "clock"
+                on_release: root.showTimePicker()
+                padding: "10dp"
+
+    BoxLayout: # Nesting another box layout which will contain the time
+        orientation: "vertical"
+
+        MDLabel:
+            text: "Chosen time:"
+
+        MDLabel:
+            spacing: "30dp"
+            id: time_text
+    
+    BoxLayout: # Nesting another box layout to contain the save and cancel button
+        orientation: "horizontal"
+
+        MDRaisedButton: # Save button fills report and closes dialog
+            text: "SAVE"
+            disabled: root.isEmpty
+            on_release: (app.fillReport(details_text.text,time_text.text),app.closeDialog())
+
+        MDFlatButton: # Cancel button closes dialog
+            text: "CANCEL"
+            on_release: app.closeDialog()
+
+<ListItemWithCheckBox>: # Defining a report entry with check box
+
+    # Properties of Dialog
+    id: reportEntry
+    markup: True
+    
+    LeftCheckBox: # Defining a check box which updates mark in database
+        id: check
+        on_release: root.mark(check, reportEntry)
+
+    # Defining a view location button which gets the primary key of the entry and displays the corresponding map
+    IconRightWidget:
+        icon: "google-maps"
+        disabled: False
+        theme_text_color: "Custom"
+        text_color: 0, 0, 0, 1  # Black Text Color
+        md_bg_color: 1, 0, 0, 0.5  # Red Background
+        on_release: (root.getID(reportEntry),app.showMapDialog())
+
+<ReportNumDialog>: # Defining a pending reports dialog
+
+    # Properties of Dialog
+    size_hint: None, None
+    size: "200dp", "120dp"
+    
+    BoxLayout: # Creating a box layout and nesting a label and a button
+
+        # Properties of box layout
+        orientation: "vertical"
+        padding: "8dp"
+        spacing: "8dp"
+        
+        MDLabel: # Label displays number of reports
+            id: reportNumLabel
+            text: "<number of reports>"
+        
+        MDRaisedButton: # Button closes the dialog
+            text: "OK"
+            on_release: app.closeDialog()
+
+<ReportDetailsDialog>: # Defining a report details dialog
+
+    # Properties of Dialog
+    size_hint: None, None
+    size: "350dp", "250dp"
+    
+    BoxLayout: # Creating a box layout
+
+        # Properties of box layout
+        orientation: "vertical"
+        padding: "8dp"
+        spacing: "8dp"
+        width: "350dp"
+
+        size_hint_x: None # Make it expand horizontally
+        
+        MDLabel:
+            id: reportDetailsLabel
+            text: "<report ID>"
+            
+        ScrollView: # Creating a scroll box with a nested label
+
+            # Properties of scroll box
+            size_hint: 1, 1  # Filling available space
+            bar_width: "10dp"  # Increasing scroll bar width
+            
+            MDLabel: # Label displays details
+                id: reportDetailsLabel2
+                text: "<report details>"
+                size_hint_y: None # Vertical will not be determined by relative size
+                height: self.texture_size[1] # Setting height based on text size
+                text_size: self.width, None # Making text fill width of scroll
+                valign: "top" # Vertically aligning text to top
+        
+        MDRaisedButton: # Creating a button to close the dialog
+            text: "OK"
+            on_release: app.closeDialog()
+
+<MapDialog>: # Defining a map dialog
+
+    # Properties of dialog
+    size_hint: None, None
+    size: "350dp", "350dp"
+
+
+
